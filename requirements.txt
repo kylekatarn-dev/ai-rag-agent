@@ -1,0 +1,28 @@
+# Core framework
+streamlit>=1.30.0
+
+# AI/LLM
+openai>=1.0.0
+langchain>=0.1.0
+langchain-openai>=0.0.5
+langchain-community>=0.0.20
+langchain-text-splitters>=0.0.1
+tiktoken>=0.5.0
+
+# Vector database
+chromadb>=0.4.0
+
+# Hybrid search (BM25)
+rank-bm25>=0.2.2
+
+# Data handling
+pandas>=2.0.0
+pydantic>=2.0.0
+pydantic-settings>=2.0.0
+
+# Google Calendar integration (optional)
+google-api-python-client>=2.100.0
+google-auth>=2.20.0
+
+# Environment/config
+python-dotenv>=1.0.0
