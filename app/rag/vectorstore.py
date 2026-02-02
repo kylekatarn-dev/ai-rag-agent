@@ -1,4 +1,5 @@
 from pathlib import Path
+import os
 import chromadb
 from chromadb.config import Settings
 
@@ -6,6 +7,12 @@ from app.config import CHROMA_DIR, CHROMA_COLLECTION_NAME
 from app.data.loader import load_properties
 from app.models.property import Property
 from .embeddings import get_embeddings
+
+
+def is_streamlit_cloud() -> bool:
+    """Detect if running on Streamlit Cloud."""
+    # Streamlit Cloud sets specific environment indicators
+    return os.path.exists("/mount/src") or os.getenv("STREAMLIT_SHARING_MODE") is not None
 
 
 class PropertyVectorStore:
@@ -18,6 +25,13 @@ class PropertyVectorStore:
 
     def _get_client(self) -> chromadb.Client:
         """Get or create ChromaDB client."""
+        # Use in-memory client on Streamlit Cloud (ephemeral filesystem)
+        if is_streamlit_cloud():
+            return chromadb.Client(
+                settings=Settings(anonymized_telemetry=False)
+            )
+
+        # Use persistent client for local development
         persist_dir = Path(CHROMA_DIR)
         persist_dir.mkdir(parents=True, exist_ok=True)
 
