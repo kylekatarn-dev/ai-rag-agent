@@ -9,7 +9,7 @@ from typing import Optional
 
 from openai import OpenAI
 
-from app.config import OPENAI_API_KEY, OPENAI_MODEL
+from app.config import get_secret, OPENAI_MODEL
 from app.models.property import Property
 from app.utils import get_logger
 
@@ -152,8 +152,9 @@ class LLMReranker:
     """
 
     def __init__(self):
-        self.client = OpenAI(api_key=OPENAI_API_KEY)
-        self.model = OPENAI_MODEL
+        # Get API key at runtime (important for Streamlit Cloud)
+        self.client = OpenAI(api_key=get_secret("OPENAI_API_KEY"))
+        self.model = get_secret("OPENAI_MODEL", OPENAI_MODEL)
 
     def rerank(
         self,

@@ -12,7 +12,7 @@ from dataclasses import dataclass, field
 
 from langchain_openai import OpenAIEmbeddings
 
-from app.config import OPENAI_API_KEY, OPENAI_EMBEDDING_MODEL
+from app.config import OPENAI_EMBEDDING_MODEL, get_secret
 from app.utils import get_logger
 
 logger = get_logger(__name__)
@@ -155,8 +155,8 @@ class CachedOpenAIEmbeddings:
 
     def __init__(
         self,
-        model: str = OPENAI_EMBEDDING_MODEL,
-        api_key: str = OPENAI_API_KEY,
+        model: str = None,
+        api_key: str = None,
         cache_max_size: int = 1000,
         cache_ttl_seconds: int = 3600,
     ):
@@ -169,6 +169,12 @@ class CachedOpenAIEmbeddings:
             cache_max_size: Maximum cached query embeddings
             cache_ttl_seconds: Cache TTL in seconds
         """
+        # Get secrets at runtime (important for Streamlit Cloud)
+        if api_key is None:
+            api_key = get_secret("OPENAI_API_KEY")
+        if model is None:
+            model = get_secret("OPENAI_EMBEDDING_MODEL", OPENAI_EMBEDDING_MODEL)
+
         self._embeddings = OpenAIEmbeddings(
             model=model,
             openai_api_key=api_key,

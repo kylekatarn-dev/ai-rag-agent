@@ -12,7 +12,7 @@ from uuid import uuid4
 
 from openai import OpenAI, AsyncOpenAI
 
-from app.config import OPENAI_API_KEY, OPENAI_MODEL
+from app.config import get_secret, OPENAI_MODEL
 from app.models.lead import Lead
 from app.models.conversation import ConversationState
 from app.rag.retriever import PropertyRetriever
@@ -66,9 +66,11 @@ class RealEstateAgent:
             use_rag_memory: Enable RAG-based chat memory (default: False)
         """
         logger.info("Initializing RealEstateAgent")
-        self.client = OpenAI(api_key=OPENAI_API_KEY)
-        self.async_client = AsyncOpenAI(api_key=OPENAI_API_KEY)
-        self.model = OPENAI_MODEL
+        # Get API key at runtime (important for Streamlit Cloud)
+        api_key = get_secret("OPENAI_API_KEY")
+        self.client = OpenAI(api_key=api_key)
+        self.async_client = AsyncOpenAI(api_key=api_key)
+        self.model = get_secret("OPENAI_MODEL", OPENAI_MODEL)
         self.retriever = PropertyRetriever()
         self.scorer = LeadScorer()
         self.state = ConversationState()

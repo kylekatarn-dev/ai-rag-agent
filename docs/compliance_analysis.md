@@ -2,7 +2,7 @@
 
 ## Case Study Requirements vs Implementation
 
-This document analyzes how well the project complies with the case study requirements for "AI Asistent pro Realitní Kancelář".
+This document analyzes how well the project complies with the case study requirements for "AI Asistent pro Realitni Kancelar".
 
 ---
 
@@ -21,9 +21,9 @@ This document analyzes how well the project complies with the case study require
 ## PART 1: Knowledge Base Design (30/30)
 
 ### Requirements
-> Navrhněte strukturu knowledge base pro realitního AI asistenta. Popište zejména:
-> - Jaké entity bude knowledge base obsahovat
-> - Jaké atributy má mít každá entita
+> Navrhnete strukturu knowledge base pro realitniho AI asistenta. Popiste zejmena:
+> - Jake entity bude knowledge base obsahovat
+> - Jake atributy ma mit kazda entita
 
 ### Implementation Status: FULLY COMPLIANT
 
@@ -32,8 +32,8 @@ This document analyzes how well the project complies with the case study require
 | Entity | File Location | Attributes Count |
 |--------|---------------|------------------|
 | Property (Nemovitost) | `app/models/property.py` | 20+ attributes |
-| Lead (Potenciální klient) | `app/models/lead.py` | 25+ attributes |
-| Broker (Makléř) | `app/models/broker.py` | 10+ attributes |
+| Lead (Potencialni klient) | `app/models/lead.py` | 25+ attributes |
+| Broker (Makler) | `app/models/broker.py` | 10+ attributes |
 | Conversation (Konverzace) | `app/models/conversation.py` | 8+ attributes |
 
 #### Property Entity Attributes
@@ -43,8 +43,8 @@ Core:
 - property_type (enum) - "warehouse" / "office"
 - location (string) - Address/locality
 - location_region (string) - Normalized Czech region
-- area_sqm (int) - Area in m²
-- price_czk_sqm (int) - Price per m²/month
+- area_sqm (int) - Area in m2
+- price_czk_sqm (int) - Price per m2/month
 - availability (string) - "ihned" or date
 - parking_spaces (int) - Parking count
 - amenities (list[string]) - Features
@@ -56,7 +56,7 @@ Business:
 - commission_rate (float) - Broker commission
 
 Computed:
-- total_monthly_rent - area × price
+- total_monthly_rent - area x price
 - is_available_now - availability == "ihned"
 - value_score - Price vs market average
 - location_region - Normalized region
@@ -80,7 +80,7 @@ Requirements:
 - max_area_sqm (int) - Maximum area
 - preferred_locations (list[string]) - Locations
 - preferred_regions (list[string]) - Czech regions
-- max_price_czk_sqm (int) - Budget per m²
+- max_price_czk_sqm (int) - Budget per m2
 - move_in_urgency (enum) - Timeline
 
 Qualification:
@@ -95,11 +95,6 @@ Status:
 - conversation_summary (string) - Summary for broker
 - follow_up_actions (list[string]) - Next steps
 ```
-
-#### Documentation Files
-- `docs/knowledge_base_design.md` - Full entity documentation
-- `README.md` - Data model section
-- `README_DETAILED.md` - Comprehensive model documentation
 
 ---
 
@@ -122,12 +117,12 @@ Status:
 
 - **Implementation**: `app/agent/chain.py` with extraction prompts
 - **Extracted Fields**:
-  - Property type (sklad/kancelář) ✓
-  - Required area (m²) ✓
-  - Location preferences ✓
-  - Region preferences ✓
-  - Budget (Kč/m²/měsíc) ✓
-  - Timeline (urgency) ✓
+  - Property type (sklad/kancelar) OK
+  - Required area (m2) OK
+  - Location preferences OK
+  - Region preferences OK
+  - Budget (Kc/m2/mesic) OK
+  - Timeline (urgency) OK
 
 #### 3. RAG for Property Search
 **Status: COMPLIANT (10/10)**
@@ -173,42 +168,42 @@ Status:
 ## Test Scenarios (18/30)
 
 ### Requirements
-> Pro lepší porovnatelnost řešení prosíme o ukázku chování asistenta alespoň v těchto třech situacích:
-> 1. Realistický a kvalitní lead
-> 2. Vágní dotaz
-> 3. Nereálný požadavek
+> Pro lepsi porovnatelnost reseni prosime o ukazku chovani asistenta alespon v techto trech situacich:
+> 1. Realisticky a kvalitni lead
+> 2. Vagni dotaz
+> 3. Nerealne pozadavek
 
 ### Implementation Status: PARTIALLY COMPLIANT
 
 | Scenario | Documented | Output Saved | Score |
 |----------|------------|--------------|-------|
-| Realistic lead | ✓ README | ✗ Missing | 6/10 |
-| Vague query | ✓ README | ✗ Missing | 6/10 |
-| Unrealistic requirements | ✓ README | ✗ Missing | 6/10 |
+| Realistic lead | OK README | Missing | 6/10 |
+| Vague query | OK README | Missing | 6/10 |
+| Unrealistic requirements | OK README | Missing | 6/10 |
 
 #### What's Documented (in README.md)
 
 **Scenario 1: Realistic Lead**
 ```
-Klient: Hledám sklad v okolí Prahy, asi 600-800 m²,
-        s rampou, do 100 Kč/m². Potřebuji to do měsíce.
+Klient: Hledam sklad v okoli Prahy, asi 600-800 m2,
+        s rampou, do 100 Kc/m2. Potrebuji to do mesice.
 
-Očekávaný výstup: 2-3 relevantní sklady, vysoké skóre (70+)
+Ocekavany vystup: 2-3 relevantni sklady, vysoke skore (70+)
 ```
 
 **Scenario 2: Vague Query**
 ```
-Klient: Potřeboval bych nějaký prostor pro firmu.
+Klient: Potreboval bych nejaky prostor pro firmu.
 
-Očekávaný výstup: Dotazy na upřesnění, postupné zjišťování
+Ocekavany vystup: Dotazy na upresneni, postupne zjistovani
 ```
 
 **Scenario 3: Unrealistic Requirements**
 ```
-Klient: Hledám kancelář v centru Prahy, 500m²,
-        max 50 Kč/m².
+Klient: Hledam kancelar v centru Prahy, 500m2,
+        max 50 Kc/m2.
 
-Očekávaný výstup: Vysvětlení tržní reality, alternativy
+Ocekavany vystup: Vysvetleni trzni reality, alternativy
 ```
 
 #### What's Missing
@@ -222,10 +217,10 @@ Očekávaný výstup: Vysvětlení tržní reality, alternativy
 ## Lead Scoring Model (40/40)
 
 ### Requirements
-> Popište a použijte jednoduchý scoring model (např. 0–100), který zohlední:
-> - úplnost informací
-> - realističnost požadavků
-> - shodu s dostupnou nabídkou
+> Popiste a pouzijte jednoduchy scoring model (napr. 0-100), ktery zohledni:
+> - uplnost informaci
+> - realisticnost pozadavku
+> - shodu s dostupnou nabidkou
 
 ### Implementation Status: FULLY COMPLIANT
 
@@ -233,7 +228,7 @@ Očekávaný výstup: Vysvětlení tržní reality, alternativy
 
 | Component | Weight | Max Points | Implementation |
 |-----------|--------|------------|----------------|
-| Completeness | 30% | 30 | 5 checks × 6 pts |
+| Completeness | 30% | 30 | 5 checks x 6 pts |
 | Realism | 30% | 30 | Budget + Area + Urgency |
 | Match Quality | 25% | 25 | Criteria fit + bonus |
 | Engagement | 15% | 15 | Contact info provided |
@@ -258,9 +253,9 @@ elif budget >= 50% of market_avg: +4 pts
 else: +0 pts
 
 # Area Size
-if area <= 500m²: +8 pts (standard)
-elif area <= 1000m²: +6 pts (medium)
-elif area <= 2000m²: +4 pts (large)
+if area <= 500m2: +8 pts (standard)
+elif area <= 1000m2: +6 pts (medium)
+elif area <= 2000m2: +4 pts (large)
 else: +2 pts (very large)
 
 # Urgency
@@ -303,85 +298,23 @@ if name: +2 pts
 
 ### Requirements
 > README s:
-> - návodem ke spuštění
-> - popisem datového modelu
+> - navodem ke spusteni
+> - popisem datoveho modelu
 > - popisem RAG pipeline
-> - výstupy pro 3 testovací scénáře
+> - vystupy pro 3 testovaci scenare
 
 ### Implementation Status: PARTIALLY COMPLIANT
 
 | Requirement | Status | Location |
 |-------------|--------|----------|
-| Installation instructions | ✓ COMPLETE | README.md lines 23-68 |
-| Data model description | ✓ COMPLETE | README.md lines 70-121 |
-| RAG pipeline description | ✓ COMPLETE | README.md lines 123-141 |
-| Test scenario outputs | ✗ INCOMPLETE | Only descriptions, no outputs |
+| Installation instructions | COMPLETE | README.md |
+| Data model description | COMPLETE | README.md |
+| RAG pipeline description | COMPLETE | README.md |
+| Test scenario outputs | INCOMPLETE | Only descriptions, no outputs |
 
 ---
 
 ## Project Architecture Overview
-
-### Directory Structure
-```
-prochazka-rag-assistant/
-├── app/                      # Main application (51 Python files)
-│   ├── main.py               # Streamlit entry point
-│   ├── config.py             # Configuration
-│   ├── agent/                # Conversational AI
-│   │   ├── chain.py          # RealEstateAgent (880 lines)
-│   │   ├── prompts.py        # System prompts
-│   │   └── tools.py          # LangChain tools
-│   ├── models/               # Pydantic models
-│   │   ├── property.py       # Property (319 lines)
-│   │   ├── lead.py           # Lead model
-│   │   ├── conversation.py   # Conversation state
-│   │   └── broker.py         # Broker model
-│   ├── rag/                  # RAG pipeline
-│   │   ├── vectorstore.py    # ChromaDB
-│   │   ├── embeddings.py     # OpenAI embeddings
-│   │   ├── retriever.py      # Search interface
-│   │   ├── hybrid_search.py  # Vector + BM25
-│   │   ├── query_expansion.py # Query enhancement
-│   │   └── reranker.py       # LLM reranking
-│   ├── scoring/              # Lead scoring
-│   │   └── lead_scorer.py    # Scoring algorithm
-│   ├── data/                 # Data layer
-│   │   ├── properties.json   # 20 properties
-│   │   └── loader.py         # Data loading
-│   ├── persistence/          # Database
-│   │   ├── database.py       # SQLite
-│   │   └── repositories.py   # Data access
-│   ├── memory/               # Chat memory
-│   │   └── chat_memory.py    # RAG-based history
-│   ├── analytics/            # Monitoring
-│   │   ├── prometheus.py     # Metrics
-│   │   └── property_tracker.py
-│   ├── output/               # Reports
-│   │   └── broker_summary.py # Broker reports
-│   ├── ui/                   # UI components
-│   │   └── components.py     # Streamlit widgets
-│   ├── calendar/             # Scheduling
-│   │   └── google_calendar.py
-│   ├── integrations/         # External
-│   │   ├── crm.py
-│   │   └── email.py
-│   └── utils/                # Utilities
-│       ├── logging.py
-│       ├── retry.py
-│       ├── rate_limiter.py
-│       ├── regions.py
-│       └── validation.py
-├── tests/                    # Test suite
-├── docs/                     # Documentation
-├── chroma_db/                # Vector database
-├── data/                     # Conversation logs
-├── requirements.txt
-├── pyproject.toml
-├── Dockerfile
-├── .env.example
-├── README.md
-└── README_DETAILED.md
-```
 
 ### Tech Stack
 | Component | Technology |
@@ -396,45 +329,17 @@ prochazka-rag-assistant/
 
 ### Property Database
 - **Total properties**: 20
-- **Warehouses**: 10 (Praha, Brno, Ostrava, Plzeň, etc.)
+- **Warehouses**: 10 (Praha, Brno, Ostrava, Plzen, etc.)
 - **Offices**: 10 (Praha centers, Brno, Ostrava, Liberec)
-- **Price range**: 75-450 Kč/m²/month
-- **Area range**: 60-2000 m²
+- **Price range**: 75-450 Kc/m2/month
+- **Area range**: 60-2000 m2
 
 ---
 
 ## Recommendations to Reach 100%
 
 ### 1. Create Test Scenario Outputs (Priority: HIGH)
-Create `docs/test_scenario_outputs.md` with actual conversation transcripts:
-
-```markdown
-## Scenario 1: Realistic Lead
-### Conversation
-User: "Hledám sklad v okolí Prahy..."
-Assistant: "..."
-...
-
-### Extracted Lead Data
-- property_type: warehouse
-- min_area_sqm: 600
-- ...
-
-### Matched Properties
-1. ID 1: Praha-východ, 650m², 110 Kč/m²
-2. ID 4: Hostivice, 400m², 105 Kč/m²
-...
-
-### Lead Score
-Score: 78/100 (HOT)
-- Completeness: 28/30
-- Realism: 26/30
-- Match Quality: 20/25
-- Engagement: 4/15
-
-### Broker Summary
-[Generated markdown summary]
-```
+Create `docs/test_scenario_outputs.md` with actual conversation transcripts.
 
 ### 2. Add Score Breakdown to UI (Priority: LOW)
 Show users how their score is calculated in real-time.

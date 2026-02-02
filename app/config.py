@@ -14,9 +14,14 @@ def get_secret(key: str, default: str = None) -> str | None:
     # Try Streamlit secrets first (for Streamlit Cloud deployment)
     try:
         import streamlit as st
-        if hasattr(st, 'secrets') and key in st.secrets:
-            return st.secrets[key]
-    except Exception:
+        if hasattr(st, 'secrets'):
+            try:
+                value = st.secrets.get(key)
+                if value is not None:
+                    return value
+            except Exception:
+                pass
+    except ImportError:
         pass
 
     # Fall back to environment variable
@@ -31,6 +36,13 @@ CHROMA_DIR = BASE_DIR / get_secret("CHROMA_PERSIST_DIR", "./chroma_db")
 OPENAI_API_KEY = get_secret("OPENAI_API_KEY")
 OPENAI_MODEL = get_secret("OPENAI_MODEL", "gpt-4o-mini")
 OPENAI_EMBEDDING_MODEL = get_secret("OPENAI_EMBEDDING_MODEL", "text-embedding-3-small")
+
+# Validate required secrets
+if not OPENAI_API_KEY:
+    import warnings
+    warnings.warn(
+        "OPENAI_API_KEY not found! Set it in .env file (local) or Streamlit secrets (cloud)."
+    )
 
 # ChromaDB
 CHROMA_COLLECTION_NAME = "properties"
