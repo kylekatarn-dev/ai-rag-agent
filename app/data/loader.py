@@ -2,9 +2,11 @@
 Property Data Loader.
 
 Loads properties from SQLite database.
-Run scripts/init_database.py to initialize the database with properties.
+Auto-initializes from JSON if database is empty (e.g., on Streamlit Cloud).
 """
 
+import json
+from pathlib import Path
 from typing import Optional
 
 from app.models.property import Property
@@ -16,6 +18,10 @@ logger = get_logger(__name__)
 _properties_cache: list[Property] | None = None
 _properties_by_id: dict[int, Property] = {}
 
+# Path to JSON data file
+DATA_DIR = Path(__file__).parent
+PROPERTIES_JSON = DATA_DIR / "properties.json"
+
 
 def _get_repository():
     """Get property repository (lazy import to avoid circular deps)."""
@@ -23,9 +29,45 @@ def _get_repository():
     return get_property_repository()
 
 
+def _load_properties_from_json() -> list[dict]:
+    """Load properties from JSON file."""
+    if not PROPERTIES_JSON.exists():
+        logger.error(f"Properties JSON not found: {PROPERTIES_JSON}")
+        return []
+
+    with open(PROPERTIES_JSON, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def _init_database_from_json() -> int:
+    """
+    Initialize database from JSON file.
+
+    Returns:
+        Number of properties created
+    """
+    repo = _get_repository()
+    properties_data = _load_properties_from_json()
+
+    if not properties_data:
+        return 0
+
+    count = 0
+    for prop_data in properties_data:
+        try:
+            prop = Property(**prop_data)
+            repo.create(prop)
+            count += 1
+        except Exception as e:
+            logger.error(f"Failed to create property {prop_data.get('id')}: {e}")
+
+    logger.info(f"Initialized database with {count} properties from JSON")
+    return count
+
+
 def _ensure_database_populated() -> bool:
     """
-    Ensure database has properties.
+    Ensure database has properties. Auto-initializes from JSON if empty.
 
     Returns:
         True if database is populated
@@ -36,10 +78,11 @@ def _ensure_database_populated() -> bool:
     if repo.get_count() > 0:
         return True
 
-    logger.warning(
-        "Database is empty! Run 'python scripts/init_database.py' to initialize."
-    )
-    return False
+    # Auto-initialize from JSON
+    logger.info("Database empty, auto-initializing from JSON...")
+    count = _init_database_from_json()
+
+    return count > 0
 
 
 def load_properties(force_reload: bool = False) -> list[Property]:
